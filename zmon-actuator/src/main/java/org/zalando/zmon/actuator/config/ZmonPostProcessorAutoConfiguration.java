@@ -15,35 +15,25 @@
  */
 package org.zalando.zmon.actuator.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.zalando.zmon.actuator.ZmonMetricsFilter;
-import org.zalando.zmon.actuator.metrics.MetricsWrapper;
-
 import com.codahale.metrics.MetricRegistry;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.zalando.zmon.actuator.ZmonRestFilterBeanPostProcessor;
 
 /**
- * @author  jbellmann
+ * @author jbellmann
  */
 @Configuration
-@ComponentScan("org.zalando.zmon.actuator")
-public class ZmonMetricFilterAutoConfiguration {
-
-
-    @Autowired
-    private MetricRegistry metricRegistry;
-
+@ConditionalOnClass(MetricRegistry.class)
+@AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
+public class ZmonPostProcessorAutoConfiguration {
 
     @Bean
-    public ZmonMetricsFilter zmonMetricsFilter() {
-        return new ZmonMetricsFilter(metricsWrapper());
-    }
-
-    @Bean
-    public MetricsWrapper metricsWrapper() {
-        return new MetricsWrapper(metricRegistry);
+    public static ZmonRestFilterBeanPostProcessor zmonRestFilterBeanPostProcessor() {
+        return new ZmonRestFilterBeanPostProcessor();
     }
 
 }

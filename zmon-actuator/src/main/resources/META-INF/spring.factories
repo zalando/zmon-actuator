@@ -1,4 +1,5 @@
 #
 #
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.zalando.zmon.actuator.config.ZmonMetricFilterAutoConfiguration
+org.zalando.zmon.actuator.config.ZmonPostProcessorAutoConfiguration,\
+org.zalando.zmon.actuator.config.ZmonMetricsAutoConfiguration

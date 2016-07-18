@@ -18,37 +18,30 @@ package org.zalando.zmon.actuator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Component
-public class ZmonRestFilterBeanPostProcessor implements BeanPostProcessor {
+public class ZmonRestFilterBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
     private static final Log logger = LogFactory.getLog(ZmonRestFilterBeanPostProcessor.class);
 
-    private final ZmonRestResponseBackendMetricsInterceptor interceptor;
-
-    @Autowired
-    public ZmonRestFilterBeanPostProcessor(
-            final ZmonRestResponseBackendMetricsInterceptor zmonRestResponseBackendMetricsFilter) {
-        this.interceptor = zmonRestResponseBackendMetricsFilter;
-    }
+    private BeanFactory beanFactory;
 
     @Override
-    public Object postProcessBeforeInitialization(final Object possiblyRestTemplateBean, final String beanName)
-        throws BeansException {
+    public Object postProcessBeforeInitialization(final Object bean, final String beanName)
+            throws BeansException {
 
-        if (possiblyRestTemplateBean instanceof RestTemplate) {
+        if (bean instanceof RestTemplate) {
 
-            RestTemplate restTemplateBean = (RestTemplate) possiblyRestTemplateBean;
+            final RestTemplate restTemplateBean = (RestTemplate) bean;
 
-            restTemplateBean.getInterceptors().add(interceptor);
+            restTemplateBean.getInterceptors().add(beanFactory.getBean(ZmonRestResponseBackendMetricsInterceptor.class));
             logger.info("Added " + ZmonRestFilterBeanPostProcessor.class.getCanonicalName() + " instance to "
                     + beanName);
         }
 
-        return possiblyRestTemplateBean;
+        return bean;
     }
 
     @Override
@@ -56,4 +49,8 @@ public class ZmonRestFilterBeanPostProcessor implements BeanPostProcessor {
         return o;
     }
 
+    @Override
+    public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }
