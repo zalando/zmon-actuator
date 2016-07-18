@@ -21,6 +21,9 @@ management:
 </dependency>
 ```
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zalando.zmon/zmon-actuator/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando.zmon/zmon-actuator)
+
+
 You need to have the base actuator dependency in place, too.
 
 ```
