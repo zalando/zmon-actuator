@@ -17,7 +17,7 @@ management:
 <dependency>
    <groupId>org.zalando.zmon</groupId>
    <artifactId>zmon-actuator</artifactId>
-   <version>0.9.3</version>
+   <version>0.9.7</version>
 </dependency>
 ```
 
