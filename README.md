@@ -17,9 +17,12 @@ management:
 <dependency>
    <groupId>org.zalando.zmon</groupId>
    <artifactId>zmon-actuator</artifactId>
-   <version>0.9.3</version>
+   <version>0.9.7</version>
 </dependency>
 ```
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zalando.zmon/zmon-actuator/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando.zmon/zmon-actuator)
+
 
 You need to have the base actuator dependency in place, too.
 
