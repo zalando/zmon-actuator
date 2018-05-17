@@ -15,7 +15,7 @@
  */
 package org.zalando.zmon.actuator.config;
 
-import com.codahale.metrics.MetricRegistry;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +27,7 @@ import org.zalando.zmon.actuator.ZmonRestFilterBeanPostProcessor;
  * @author jbellmann
  */
 @Configuration
-@ConditionalOnClass(MetricRegistry.class)
+@ConditionalOnClass(MeterRegistry.class)
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 public class ZmonPostProcessorAutoConfiguration {
 

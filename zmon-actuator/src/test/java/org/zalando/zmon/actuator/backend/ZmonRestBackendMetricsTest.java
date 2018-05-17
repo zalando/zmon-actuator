@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2015 Zalando SE (http://tech.zalando.com)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,64 +15,50 @@
  */
 package org.zalando.zmon.actuator.backend;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.RestTemplate;
+import org.zalando.zmon.actuator.ExampleApplication;
+
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import org.junit.runner.RunWith;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import org.springframework.http.HttpStatus;
-
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import org.springframework.web.client.RestTemplate;
-
-import org.zalando.zmon.actuator.ExampleApplication;
-
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.MetricRegistry;
-
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 /**
- * @author  jbellmann
+ * @author jbellmann
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = {ExampleApplication.class})
-@WebIntegrationTest(randomPort = true, value = {"debug=false"})
+@SpringBootTest(classes = {ExampleApplication.class}, value = {"debug=false"}, webEnvironment = RANDOM_PORT)
 public class ZmonRestBackendMetricsTest {
 
-    public static final int REPEATS = 100;
+    private static final int REPEATS = 100;
     private final Logger logger = LoggerFactory.getLogger(ZmonRestBackendMetricsTest.class);
 
     @Value("${local.server.port}")
     private int port;
 
     @Autowired
-    private MetricRegistry metricRegistry;
+    private MeterRegistry meterRegistry;
 
     private RestTemplate externalClient = new RestTemplate();
 
@@ -83,9 +69,9 @@ public class ZmonRestBackendMetricsTest {
 
     @Before
     public void setUp() {
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS)
-                                                  .convertDurationsTo(TimeUnit.MILLISECONDS).build();
-        reporter.start(2, TimeUnit.SECONDS);
+//        ConsoleReporter reporter = ConsoleReporter.forRegistry(meterRegistry).convertRatesTo(TimeUnit.SECONDS)
+//                .convertDurationsTo(TimeUnit.MILLISECONDS).build();
+//        reporter.start(2, TimeUnit.SECONDS);
         expectDeleteCall();
     }
 
@@ -97,7 +83,7 @@ public class ZmonRestBackendMetricsTest {
             TimeUnit.MILLISECONDS.sleep(random.nextInt(30));
         }
 
-        assertThat(metricRegistry.getTimers().get("zmon.request.204.DELETE.localhost:9999")).isNotNull();
+        assertThat(meterRegistry.get("zmon.request.204.DELETE.localhost:9999").timer()).isNotNull();
 
         String metricsEndpointResponse = externalClient.getForObject("http://localhost:" + port + "/metrics",
                 String.class);

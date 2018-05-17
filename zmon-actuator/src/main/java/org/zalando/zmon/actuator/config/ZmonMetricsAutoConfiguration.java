@@ -15,7 +15,8 @@
  */
 package org.zalando.zmon.actuator.config;
 
-import com.codahale.metrics.MetricRegistry;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
@@ -29,12 +30,12 @@ import org.zalando.zmon.actuator.metrics.MetricsWrapper;
  */
 
 @Configuration
-@ConditionalOnClass(MetricRegistry.class)
-@AutoConfigureAfter(name = "MetricsDropwizardAutoConfiguration")
+@ConditionalOnClass(MeterRegistry.class)
+@AutoConfigureAfter(CompositeMeterRegistryAutoConfiguration.class)
 public class ZmonMetricsAutoConfiguration {
 
     @Bean(name = "zmonMetricsWrapper")
-    public MetricsWrapper zmonMetricsWrapper(final MetricRegistry metricRegistry) {
+    public MetricsWrapper zmonMetricsWrapper(final MeterRegistry metricRegistry) {
         return new MetricsWrapper(metricRegistry);
     }
 
