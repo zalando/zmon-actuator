@@ -85,7 +85,7 @@ public class ZmonRestBackendMetricsTest {
 
         assertThat(meterRegistry.get("zmon.request.204.DELETE.localhost:9999").timer()).isNotNull();
 
-        String metricsEndpointResponse = externalClient.getForObject("http://localhost:" + port + "/metrics",
+        String metricsEndpointResponse = externalClient.getForObject("http://localhost:" + port + "/actuator/prometheus",
                 String.class);
 
         logger.info(metricsEndpointResponse);
