@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class ZmonRestResponseBackendMetricsInterceptorTest {
 
@@ -40,7 +39,7 @@ public class ZmonRestResponseBackendMetricsInterceptorTest {
       final ArgumentCaptor<StopWatch> stopwatchArgumentCaptor = ArgumentCaptor.forClass(StopWatch.class);
       interceptor.intercept(null, null, this.execution);
 
-      verify(this.mockedWrapper, times(1)).recordBackendRoundTripMetrics(isNull(),
+      verify(this.mockedWrapper).recordBackendRoundTripMetrics(isNull(),
               isNull(), stopwatchArgumentCaptor.capture());
 
       Assert.assertTrue("We have set thread sleep at 200", this.takesAtLeastSleepTime(stopwatchArgumentCaptor));
