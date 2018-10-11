@@ -3,5 +3,3 @@ management:
     web:
       exposure:
         include: "*"
-
-
