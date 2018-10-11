@@ -1,29 +1,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.0.2.RELEASE</version>
         <relativePath/>
     </parent>
+
     <groupId>org.zalando.zmon</groupId>
     <artifactId>zmon-actuator-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.9-SNAPSHOT</version>
+    <version>0.9.10-SNAPSHOT</version>
+    <url>https://zmon.io</url>
+    <description>Improved REST endpoint metrics for Spring Boot Projects</description>
 
     <properties>
         <java.version>1.8</java.version>
+        <!-- using the nexus-staging-maven-plugin instead of maven-deploy-plugin-->
+        <maven.deploy.skip>true</maven.deploy.skip>
         <coveralls.dryRun>true</coveralls.dryRun>
         <main.basedir>${basedir}</main.basedir>
         <argLine />
+        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
-    </properties>
-
+        <wiremock.version>1.58</wiremock.version>    </properties>
     <modules>
-    	<module>zmon-actuator</module>
-    	<module>zmon-actuator-jaxrs-jersey</module>
-    	<module>samples</module>
+        <module>zmon-actuator</module>
+        <module>zmon-actuator-jaxrs-jersey</module>
+        <module>samples</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock</artifactId>
+                <version>${wiremock.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
@@ -61,6 +78,58 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                    <arguments>-Pwith-gpg</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>${nexus-staging-maven-plugin.version}</version>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <autoDropAfterRelease>true</autoDropAfterRelease>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-deploy</id>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
@@ -70,14 +139,33 @@
                 <coveralls.dryRun>false</coveralls.dryRun>
             </properties>
         </profile>
+        <profile>
+            <id>with-gpg</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <scm>
         <url>https://github.com/zalando-zmon/zmon-actuator.git</url>
-        <connection>scm:git:https://github.com/zalando-zmon/zmon-actuator.git</connection>
-        <developerConnection>scm:git:https://github.com/zalando-zmon/zmon-actuator.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <connection>scm:git:git@github.com:zalando-zmon/zmon-actuator.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando-zmon/zmon-actuator.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
     <licenses>
         <license>
@@ -95,4 +183,27 @@
             <email>joerg.bellmann@zalando.de</email>
         </developer>
     </developers>
+
+    <organization>
+        <name>Zalando SE</name>
+        <url>https://opensource.zalando.com/</url>
+    </organization>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/zalando-zmon/zmon-actuator/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+    </distributionManagement>
 </project>

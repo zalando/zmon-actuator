@@ -1,22 +1,6 @@
-/**
- * Copyright (C) 2015 Zalando SE (http://tech.zalando.com)
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.zalando.zmon.actuator;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,12 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -51,32 +32,9 @@ public class ZmonMetricsFilterTest {
     @Autowired
     private MeterRegistry meterRegistry;
 
-    private RestTemplate restTemplate;
+    private TestRestTemplate restTemplate = new TestRestTemplate();
 
     private final Random random = new Random(System.currentTimeMillis());
-
-    @Before
-    public void setUp() {
-//        Reporter reporter = Reporter.forRegistry(meterRegistry).convertRatesTo(TimeUnit.SECONDS)
-//                .convertDurationsTo(TimeUnit.MILLISECONDS).build();
-//        reporter.start(2, TimeUnit.SECONDS);
-//
-        restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new ResponseErrorHandler() {
-
-            @Override
-            public boolean hasError(final ClientHttpResponse response) throws IOException {
-
-                // we want them all to pass
-                return false;
-            }
-
-            @Override
-            public void handleError(final ClientHttpResponse response) throws IOException {
-            }
-        });
-
-    }
 
     @Test
     public void test() throws InterruptedException {

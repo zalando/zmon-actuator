@@ -61,6 +61,12 @@ Important is to use at least the specified Jersey versions as defined in the POM
 }
 ```
 
+## Release to Maven Central
+
+    mvn clean release:prepare -Dresume=false
+
+    mvn release:perform
+
 ## License
 
 Copyright © 2015 Zalando SE
