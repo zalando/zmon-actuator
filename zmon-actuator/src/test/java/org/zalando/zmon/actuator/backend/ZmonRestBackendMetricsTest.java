@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.zmon.actuator.ExampleApplication;
@@ -44,7 +43,7 @@ public class ZmonRestBackendMetricsTest {
     @Autowired
     private MeterRegistry meterRegistry;
 
-    private RestTemplate externalClient = new RestTemplate();
+  private final RestTemplate externalClient = new RestTemplate();
 
     private final Random random = new Random(System.currentTimeMillis());
 
@@ -53,23 +52,23 @@ public class ZmonRestBackendMetricsTest {
 
     @Before
     public void setUp() {
-        expectDeleteCall();
+      this.expectDeleteCall();
     }
 
     @Test
     public void test() throws InterruptedException {
         for (int i = 0; i < REPEATS; i++) {
 
-            externalClient.getForObject("http://localhost:" + port + "/timeConsumingCall", String.class);
-            TimeUnit.MILLISECONDS.sleep(random.nextInt(30));
+          this.externalClient.getForObject("http://localhost:" + this.port + "/timeConsumingCall", String.class);
+          TimeUnit.MILLISECONDS.sleep(this.random.nextInt(30));
         }
 
-        assertThat(meterRegistry.get("zmon.request.204.DELETE.localhost:9999").timer()).isNotNull();
+      assertThat(this.meterRegistry.get("zmon.request.204.DELETE.localhost:9999").timer()).isNotNull();
 
-        String metricsEndpointResponse = externalClient.getForObject("http://localhost:" + port + "/actuator/prometheus",
+      final String metricsEndpointResponse = this.externalClient.getForObject("http://localhost:" + this.port + "/actuator/prometheus",
                 String.class);
 
-        logger.info(metricsEndpointResponse);
+      this.logger.info(metricsEndpointResponse);
     }
 
     private void expectDeleteCall() {

@@ -20,30 +20,30 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 public class ZmonRestResponseBackendMetricsInterceptorTest {
 
     private static final int PREFERRED_SLEEP_TIME = 200;
-    private MetricsWrapper mockedWrapper = mock(MetricsWrapper.class);
-    private ClientHttpRequestExecution execution = mock(ClientHttpRequestExecution.class);
+  private final MetricsWrapper mockedWrapper = mock(MetricsWrapper.class);
+  private final ClientHttpRequestExecution execution = mock(ClientHttpRequestExecution.class);
 
     @Test
     public void testTimeElapsing() throws IOException {
-        ZmonRestResponseBackendMetricsInterceptor interceptor = new ZmonRestResponseBackendMetricsInterceptor(
-                mockedWrapper);
+      final ZmonRestResponseBackendMetricsInterceptor interceptor = new ZmonRestResponseBackendMetricsInterceptor(
+              this.mockedWrapper);
 
-        when(execution.execute(
-            isNull() ,
+      when(this.execution.execute(
+              isNull(),
                 isNull())).then(
-                (Answer< ClientHttpResponse >) invocationOnMock-> {
+              (Answer<ClientHttpResponse>) invocationOnMock -> {
                     Thread.sleep(PREFERRED_SLEEP_TIME);
                     return null;
-                }
-            );
+              }
+      );
 
-        ArgumentCaptor<StopWatch> stopwatchArgumentCaptor = ArgumentCaptor.forClass(StopWatch.class);
-        interceptor.intercept(null, null, execution);
+      final ArgumentCaptor<StopWatch> stopwatchArgumentCaptor = ArgumentCaptor.forClass(StopWatch.class);
+      interceptor.intercept(null, null, this.execution);
 
-        verify(mockedWrapper, times(1)).recordBackendRoundTripMetrics(isNull(),
-            isNull(), stopwatchArgumentCaptor.capture());
+      verify(this.mockedWrapper, times(1)).recordBackendRoundTripMetrics(isNull(),
+              isNull(), stopwatchArgumentCaptor.capture());
 
-        Assert.assertTrue("We have set thread sleep at 200", takesAtLeastSleepTime(stopwatchArgumentCaptor));
+      Assert.assertTrue("We have set thread sleep at 200", this.takesAtLeastSleepTime(stopwatchArgumentCaptor));
 
     }
 

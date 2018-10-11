@@ -32,7 +32,7 @@ public class ZmonMetricsFilterTest {
     @Autowired
     private MeterRegistry meterRegistry;
 
-    private TestRestTemplate restTemplate = new TestRestTemplate();
+  private final TestRestTemplate restTemplate = new TestRestTemplate();
 
     private final Random random = new Random(System.currentTimeMillis());
 
@@ -40,16 +40,16 @@ public class ZmonMetricsFilterTest {
     public void test() throws InterruptedException {
         for (int i = 0; i < 100; i++) {
 
-            restTemplate.getForObject("http://localhost:" + port + "/hello", String.class);
-            TimeUnit.MILLISECONDS.sleep(random.nextInt(500));
+          this.restTemplate.getForObject("http://localhost:" + this.port + "/hello", String.class);
+          TimeUnit.MILLISECONDS.sleep(this.random.nextInt(500));
         }
 
-        assertThat(meterRegistry.get("zmon.response.200.GET.hello").timer()).isNotNull();
-        assertThat(meterRegistry.get("zmon.response.503.GET.hello").timer()).isNotNull();
+      assertThat(this.meterRegistry.get("zmon.response.200.GET.hello").timer()).isNotNull();
+      assertThat(this.meterRegistry.get("zmon.response.503.GET.hello").timer()).isNotNull();
 
-        String metricsEndpointResponse = restTemplate.getForObject("http://localhost:" + port + "/actuator/prometheus",
+      final String metricsEndpointResponse = this.restTemplate.getForObject("http://localhost:" + this.port + "/actuator/prometheus",
                 String.class);
 
-        logger.info(metricsEndpointResponse);
+      this.logger.info(metricsEndpointResponse);
     }
 }

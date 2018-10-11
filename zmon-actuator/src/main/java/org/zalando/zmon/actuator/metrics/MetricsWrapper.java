@@ -17,7 +17,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class MetricsWrapper {
 
-    private static final Logger LOGGER = getLogger(MetricsWrapper.class);
+  private static final Logger LOGGER = getLogger(MetricsWrapper.class);
     private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
 
     private final MeterRegistry meterRegistry;
@@ -29,31 +29,31 @@ public class MetricsWrapper {
 
     public void recordClientRequestMetrics(final HttpServletRequest request, final String path, final int status,
                                            final long time) {
-        String suffix = getFinalStatus(request);
+      final String suffix = this.getFinalStatus(request);
 
-        String metricName = metricNameFrom("zmon.response", status, request.getMethod(), suffix);
-        submitToTimer(metricName, time);
+      final String metricName = metricNameFrom("zmon.response", status, request.getMethod(), suffix);
+      this.submitToTimer(metricName, time);
     }
 
     public void recordBackendRoundTripMetrics(final String requestMethod, final String host, final int status,
                                               final long time) {
 
-        String metricName = metricNameFrom("zmon.request", status, requestMethod, host);
-        submitToTimer(metricName, time);
+      final String metricName = metricNameFrom("zmon.request", status, requestMethod, host);
+      this.submitToTimer(metricName, time);
     }
 
     public void recordBackendRoundTripMetrics(final HttpRequest request, final ClientHttpResponse response,
                                               final StopWatch stopwatch) {
 
         try {
-            recordBackendRoundTripMetrics(request.getMethod().name(), getHost(request), response.getRawStatusCode(), stopwatch.getTotalTimeMillis());
-        } catch (IOException e) {
+          this.recordBackendRoundTripMetrics(request.getMethod().name(), this.getHost(request), response.getRawStatusCode(), stopwatch.getTotalTimeMillis());
+        } catch (final IOException e) {
             LOGGER.warn("Could not detect status for " + response);
         }
     }
 
     private String getHost(final HttpRequest request) {
-        return request.getURI().getHost() + getPort(request);
+      return request.getURI().getHost() + this.getPort(request);
     }
 
     private String getPort(final HttpRequest request) {
@@ -62,7 +62,7 @@ public class MetricsWrapper {
     }
 
     private String getFinalStatus(final HttpServletRequest request) {
-        Object bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+      final Object bestMatchingPattern = request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
         if (bestMatchingPattern != null) {
             return fixSpecialCharacters(bestMatchingPattern.toString());
         }
@@ -90,15 +90,15 @@ public class MetricsWrapper {
 
     private void submitToTimer(final String metricName, final long value) {
         try {
-            Timer timer = meterRegistry.timer(metricName);
+          final Timer timer = this.meterRegistry.timer(metricName);
             timer.record(value, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.warn("Unable to submit timer metric '" + metricName + "'", e);
         }
     }
 
     private static String metricNameFrom(final String prefix, final int status, final String requestMethod, final String suffix) {
-        String dirtyName = prefix + "." + status + "." + requestMethod.toUpperCase() + "." + suffix;
+      final String dirtyName = prefix + "." + status + "." + requestMethod.toUpperCase() + "." + suffix;
         return sanitizeMetricName(dirtyName);
     }
 

@@ -24,7 +24,8 @@
         <argLine />
         <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
-        <wiremock.version>1.58</wiremock.version>    </properties>
+        <wiremock.version>1.58</wiremock.version>
+    </properties>
     <modules>
         <module>zmon-actuator</module>
         <module>zmon-actuator-jaxrs-jersey</module>
