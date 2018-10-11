@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.zalando.zmon</groupId>
         <artifactId>zmon-actuator-samples</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>zmon-actuator-jetty-jersey</artifactId>

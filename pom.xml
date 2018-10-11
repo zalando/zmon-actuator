@@ -11,7 +11,7 @@
     <groupId>org.zalando.zmon</groupId>
     <artifactId>zmon-actuator-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.10-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <url>https://zmon.io</url>
     <description>Improved REST endpoint metrics for Spring Boot Projects</description>
 
